@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+<!-- saved from url=(0082)https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/seq2seq/ -->
+<html lang="ko"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        
+        
+        <title>seq2seq 모델 · 텐서플로우 문서 한글 번역본</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        <meta name="author" content="TensorFlow Korea">
+        
+        
+    
+    <link rel="stylesheet" href="./seq2seq 모델 · 텐서플로우 문서 한글 번역본_files/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="./seq2seq 모델 · 텐서플로우 문서 한글 번역본_files/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="./seq2seq 모델 · 텐서플로우 문서 한글 번역본_files/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="./seq2seq 모델 · 텐서플로우 문서 한글 번역본_files/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="./seq2seq 모델 · 텐서플로우 문서 한글 번역본_files/website(1).css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/syntaxnet/">
+    
+    
+    <link rel="prev" href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/recurrent/">
+    
+
+    <script async="" src="./seq2seq 모델 · 텐서플로우 문서 한글 번역본_files/analytics.js"></script><style type="text/css">.MathJax_Hover_Frame {border-radius: .25em; -webkit-border-radius: .25em; -moz-border-radius: .25em; -khtml-border-radius: .25em; box-shadow: 0px 0px 15px #83A; -webkit-box-shadow: 0px 0px 15px #83A; -moz-box-shadow: 0px 0px 15px #83A; -khtml-box-shadow: 0px 0px 15px #83A; border: 1px solid #A6D ! important; display: inline-block; position: absolute}
+.MathJax_Menu_Button .MathJax_Hover_Arrow {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; -khtml-border-radius: 4px; font-family: 'Courier New',Courier; font-size: 9px; color: #F0F0F0}
+.MathJax_Menu_Button .MathJax_Hover_Arrow span {display: block; background-color: #AAA; border: 1px solid; border-radius: 3px; line-height: 0; padding: 4px}
+.MathJax_Hover_Arrow:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_Hover_Arrow:hover span {background-color: #CCC!important}
+</style><style type="text/css">#MathJax_About {position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: #DDDDDD; color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; -webkit-border-radius: 15px; -moz-border-radius: 15px; -khtml-border-radius: 15px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_About.MathJax_MousePost {outline: none}
+.MathJax_Menu {position: absolute; background-color: white; color: black; width: auto; padding: 5px 0px; border: 1px solid #CCCCCC; margin: 0; cursor: default; font: menu; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px; -khtml-border-radius: 5px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+.MathJax_MenuItem {padding: 1px 2em; background: transparent}
+.MathJax_MenuArrow {position: absolute; right: .5em; padding-top: .25em; color: #666666; font-size: .75em}
+.MathJax_MenuActive .MathJax_MenuArrow {color: white}
+.MathJax_MenuArrow.RTL {left: .5em; right: auto}
+.MathJax_MenuCheck {position: absolute; left: .7em}
+.MathJax_MenuCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuRadioCheck {position: absolute; left: .7em}
+.MathJax_MenuRadioCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuLabel {padding: 1px 2em 3px 1.33em; font-style: italic}
+.MathJax_MenuRule {border-top: 1px solid #DDDDDD; margin: 4px 3px}
+.MathJax_MenuDisabled {color: GrayText}
+.MathJax_MenuActive {background-color: #606872; color: white}
+.MathJax_MenuDisabled:focus, .MathJax_MenuLabel:focus {background-color: #E8E8E8}
+.MathJax_ContextMenu:focus {outline: none}
+.MathJax_ContextMenu .MathJax_MenuItem:focus {outline: none}
+#MathJax_AboutClose {top: .2em; right: .2em}
+.MathJax_Menu .MathJax_MenuClose {top: -10px; left: -10px}
+.MathJax_MenuClose {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; font-family: 'Courier New',Courier; font-size: 24px; color: #F0F0F0}
+.MathJax_MenuClose span {display: block; background-color: #AAA; border: 1.5px solid; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; line-height: 0; padding: 8px 0 6px}
+.MathJax_MenuClose:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_MenuClose:hover span {background-color: #CCC!important}
+.MathJax_MenuClose:hover:focus {outline: none}
+</style><style type="text/css">.MathJax_Preview .MJXf-math {color: inherit!important}
+</style><style type="text/css">.MJX_Assistive_MathML {position: absolute!important; top: 0; left: 0; clip: rect(1px, 1px, 1px, 1px); padding: 1px 0 0 0!important; border: 0!important; height: 1px!important; width: 1px!important; overflow: hidden!important; display: block!important; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none}
+.MJX_Assistive_MathML.MJX_Assistive_MathML_Block {width: 100%!important}
+</style><style type="text/css">#MathJax_Zoom {position: absolute; background-color: #F0F0F0; overflow: auto; display: block; z-index: 301; padding: .5em; border: 1px solid black; margin: 0; font-weight: normal; font-style: normal; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; -webkit-box-sizing: content-box; -moz-box-sizing: content-box; box-sizing: content-box; box-shadow: 5px 5px 15px #AAAAAA; -webkit-box-shadow: 5px 5px 15px #AAAAAA; -moz-box-shadow: 5px 5px 15px #AAAAAA; -khtml-box-shadow: 5px 5px 15px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_ZoomOverlay {position: absolute; left: 0; top: 0; z-index: 300; display: inline-block; width: 100%; height: 100%; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+#MathJax_ZoomFrame {position: relative; display: inline-block; height: 0; width: 0}
+#MathJax_ZoomEventTrap {position: absolute; left: 0; top: 0; z-index: 302; display: inline-block; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+</style><style type="text/css">.MathJax_Preview {color: #888}
+#MathJax_Message {position: fixed; left: 1em; bottom: 1.5em; background-color: #E6E6E6; border: 1px solid #959595; margin: 0px; padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto; white-space: nowrap}
+#MathJax_MSIE_Frame {position: absolute; top: 0; left: 0; width: 0px; z-index: 101; border: 0px; margin: 0px; padding: 0px}
+.MathJax_Error {color: #CC0000; font-style: italic}
+</style><style type="text/css">.MJXp-script {font-size: .8em}
+.MJXp-right {-webkit-transform-origin: right; -moz-transform-origin: right; -ms-transform-origin: right; -o-transform-origin: right; transform-origin: right}
+.MJXp-bold {font-weight: bold}
+.MJXp-italic {font-style: italic}
+.MJXp-scr {font-family: MathJax_Script,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-frak {font-family: MathJax_Fraktur,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-sf {font-family: MathJax_SansSerif,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-cal {font-family: MathJax_Caligraphic,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-mono {font-family: MathJax_Typewriter,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-largeop {font-size: 150%}
+.MJXp-largeop.MJXp-int {vertical-align: -.2em}
+.MJXp-math {display: inline-block; line-height: 1.2; text-indent: 0; font-family: 'Times New Roman',Times,STIXGeneral,serif; white-space: nowrap; border-collapse: collapse}
+.MJXp-display {display: block; text-align: center; margin: 1em 0}
+.MJXp-math span {display: inline-block}
+.MJXp-box {display: block!important; text-align: center}
+.MJXp-box:after {content: " "}
+.MJXp-rule {display: block!important; margin-top: .1em}
+.MJXp-char {display: block!important}
+.MJXp-mo {margin: 0 .15em}
+.MJXp-mfrac {margin: 0 .125em; vertical-align: .25em}
+.MJXp-denom {display: inline-table!important; width: 100%}
+.MJXp-denom > * {display: table-row!important}
+.MJXp-surd {vertical-align: top}
+.MJXp-surd > * {display: block!important}
+.MJXp-script-box > *  {display: table!important; height: 50%}
+.MJXp-script-box > * > * {display: table-cell!important; vertical-align: top}
+.MJXp-script-box > *:last-child > * {vertical-align: bottom}
+.MJXp-script-box > * > * > * {display: block!important}
+.MJXp-mphantom {visibility: hidden}
+.MJXp-munderover {display: inline-table!important}
+.MJXp-over {display: inline-block!important; text-align: center}
+.MJXp-over > * {display: block!important}
+.MJXp-munderover > * {display: table-row!important}
+.MJXp-mtable {vertical-align: .25em; margin: 0 .125em}
+.MJXp-mtable > * {display: inline-table!important; vertical-align: middle}
+.MJXp-mtr {display: table-row!important}
+.MJXp-mtd {display: table-cell!important; text-align: center; padding: .5em 0 0 .5em}
+.MJXp-mtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-mlabeledtr {display: table-row!important}
+.MJXp-mlabeledtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mlabeledtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MJXp-scale0 {-webkit-transform: scaleX(.0); -moz-transform: scaleX(.0); -ms-transform: scaleX(.0); -o-transform: scaleX(.0); transform: scaleX(.0)}
+.MJXp-scale1 {-webkit-transform: scaleX(.1); -moz-transform: scaleX(.1); -ms-transform: scaleX(.1); -o-transform: scaleX(.1); transform: scaleX(.1)}
+.MJXp-scale2 {-webkit-transform: scaleX(.2); -moz-transform: scaleX(.2); -ms-transform: scaleX(.2); -o-transform: scaleX(.2); transform: scaleX(.2)}
+.MJXp-scale3 {-webkit-transform: scaleX(.3); -moz-transform: scaleX(.3); -ms-transform: scaleX(.3); -o-transform: scaleX(.3); transform: scaleX(.3)}
+.MJXp-scale4 {-webkit-transform: scaleX(.4); -moz-transform: scaleX(.4); -ms-transform: scaleX(.4); -o-transform: scaleX(.4); transform: scaleX(.4)}
+.MJXp-scale5 {-webkit-transform: scaleX(.5); -moz-transform: scaleX(.5); -ms-transform: scaleX(.5); -o-transform: scaleX(.5); transform: scaleX(.5)}
+.MJXp-scale6 {-webkit-transform: scaleX(.6); -moz-transform: scaleX(.6); -ms-transform: scaleX(.6); -o-transform: scaleX(.6); transform: scaleX(.6)}
+.MJXp-scale7 {-webkit-transform: scaleX(.7); -moz-transform: scaleX(.7); -ms-transform: scaleX(.7); -o-transform: scaleX(.7); transform: scaleX(.7)}
+.MJXp-scale8 {-webkit-transform: scaleX(.8); -moz-transform: scaleX(.8); -ms-transform: scaleX(.8); -o-transform: scaleX(.8); transform: scaleX(.8)}
+.MJXp-scale9 {-webkit-transform: scaleX(.9); -moz-transform: scaleX(.9); -ms-transform: scaleX(.9); -o-transform: scaleX(.9); transform: scaleX(.9)}
+.MathJax_PHTML .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style></head>
+    <body><div id="MathJax_Message" style="display: none;"></div>
+        
+<div class="book without-animation with-summary font-size-2 font-family-1">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="검색어 입력">
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+    
+        
+        <li>
+            <a href="https://www.gitbook.com/book/tensorflowkorea/tensorflow-kr" target="_blank" class="custom-link">텐서플로우 문서 한글 번역본</a>
+        </li>
+    
+    
+
+    
+    <li class="divider"></li>
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../../../">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/">
+            
+                    
+                    머리말
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../../">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/">
+            
+                    
+                    소개
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../../get_started/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/get_started/">
+            
+                    
+                    시작하기
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="../../get_started/os_setup.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/get_started/os_setup.html">
+            
+                    
+                    다운로드 및 설치
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="../../get_started/basic_usage.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/get_started/basic_usage.html">
+            
+                    
+                    기본적인 사용법
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="../">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/">
+            
+                    
+                    튜토리얼
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1">
+            
+                <span>
+            
+                    
+                    기본 뉴럴 네트워크
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1.1" data-path="../mnist/beginners/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/mnist/beginners/">
+            
+                    
+                    MNIST 초급
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.1.2" data-path="../mnist/pros/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/mnist/pros/">
+            
+                    
+                    MNIST 고급
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.1.3" data-path="../mnist/tf/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/mnist/tf/">
+            
+                    
+                    텐서플로우 구조
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.1.4" data-path="../mnist/download/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/mnist/download/">
+            
+                    
+                    MNIST 데이터 다운로드
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2">
+            
+                <span>
+            
+                    
+                    tf.contrib.learn을 사용한 간편한 머신러닝
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.2.1" data-path="../tflearn/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/tflearn/">
+            
+                    
+                    tf.contrib.learn 시작하기
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.2" data-path="../linear/overview.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/linear/overview.html">
+            
+                    
+                    tf.contrib.learn 선형모델 소개
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.3" data-path="../wide/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/wide/">
+            
+                    
+                    선형모델 튜토리얼
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.4" data-path="../wide_and_deep/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/wide_and_deep/">
+            
+                    
+                    와이드앤 딥 러닝 튜토리얼
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3">
+            
+                <span>
+            
+                    
+                    텐서플로우 서빙
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.3.1" data-path="../tfserve/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/tfserve/">
+            
+                    
+                    텐서플로우 서빙
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4">
+            
+                <span>
+            
+                    
+                    이미지 프로세싱
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.4.1" data-path="../deep_cnn/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/deep_cnn/">
+            
+                    
+                    콘볼루션 뉴럴 네트워크
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.2" data-path="../image_recognition/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/image_recognition/">
+            
+                    
+                    이미지 인식
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.5">
+            
+                <span>
+            
+                    
+                    언어와 시퀀스 프로세싱
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.5.1" data-path="../word2vec/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/word2vec/">
+            
+                    
+                    word2vec 모델
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.5.2" data-path="../recurrent/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/recurrent/">
+            
+                    
+                    리커런트 뉴럴 네트워크
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.4.5.3" data-path="./">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/seq2seq/">
+            
+                    
+                    seq2seq 모델
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.5.4" data-path="../syntaxnet/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/syntaxnet/">
+            
+                    
+                    SyntaxNet
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.6">
+            
+                <span>
+            
+                    
+                    비머신러닝 어플리케이션
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.6.1" data-path="../mandelbrot/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/mandelbrot/">
+            
+                    
+                    만델브로트
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.6.2" data-path="../pdes/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/pdes/">
+            
+                    
+                    편미분 방정식
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="../../how_tos/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/how_tos/">
+            
+                    
+                    하우투
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.1" data-path="../../how_tos/variables/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/how_tos/variables/">
+            
+                    
+                    변수
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.2" data-path="../mnist/tf/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/mnist/tf/">
+            
+                    
+                    텐서플로우 구조
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.3" data-path="../../how_tos/summaries_and_tensorboard/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/how_tos/summaries_and_tensorboard/">
+            
+                    
+                    텐서보드
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.4" data-path="../../how_tos/graph_viz/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/how_tos/graph_viz/">
+            
+                    
+                    그래프 시각화
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.5" data-path="../../how_tos/reading_data/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/how_tos/reading_data/">
+            
+                    
+                    데이터 로딩
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.6" data-path="../../how_tos/threading_and_queues/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/how_tos/threading_and_queues/">
+            
+                    
+                    쓰레드와 큐
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.7" data-path="../../how_tos/distributed/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/how_tos/distributed/">
+            
+                    
+                    분산처리
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.8" data-path="../../how_tos/adding_an_op/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/how_tos/adding_an_op/">
+            
+                    
+                    커스텀 연산자
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.9" data-path="../../how_tos/documentation/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/how_tos/documentation/">
+            
+                    
+                    문서화
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.10" data-path="../../how_tos/new_data_formats/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/how_tos/new_data_formats/">
+            
+                    
+                    커스텀 데이터 포맷
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.11" data-path="../../how_tos/using_gpu/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/how_tos/using_gpu/">
+            
+                    
+                    GPU
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.12" data-path="../../how_tos/variable_scope/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/how_tos/variable_scope/">
+            
+                    
+                    공유 변수
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.13" data-path="../../how_tos/tool_developers/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/how_tos/tool_developers/">
+            
+                    
+                    모델 파일
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.14" data-path="../../how_tos/image_retraining/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/how_tos/image_retraining/">
+            
+                    
+                    부분 학습
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.15" data-path="../../how_tos/meta_graph/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/how_tos/meta_graph/">
+            
+                    
+                    메타 그래프
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.16" data-path="../../how_tos/quantization/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/how_tos/quantization/">
+            
+                    
+                    정량화
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" data-path="../../api_docs/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/">
+            
+                    
+                    API
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.1" data-path="../../api_docs/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/">
+            
+                    
+                    개요
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2" data-path="../../api_docs/python/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/python/">
+            
+                    
+                    Python API
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.2.1" data-path="../../api_docs/python/framework.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/python/framework.html">
+            
+                    
+                    그래프 생성
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2.2" data-path="../../api_docs/python/constant_op.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/python/constant_op.html">
+            
+                    
+                    상수, 시퀀스, 난수 생성
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2.3" data-path="../../api_docs/python/state_ops.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/python/state_ops.html">
+            
+                    
+                    변수
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2.4" data-path="../../api_docs/python/array_ops.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/python/array_ops.html">
+            
+                    
+                    텐서 변환
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2.5" data-path="../../api_docs/python/math_ops.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/python/math_ops.html">
+            
+                    
+                    수학 함수
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2.6" data-path="../../api_docs/python/control_flow_ops.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/python/control_flow_ops.html">
+            
+                    
+                    제어 연산자
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2.7" data-path="../../api_docs/python/image.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/python/image.html">
+            
+                    
+                    이미지 처리
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2.8" data-path="../../api_docs/python/sparse_ops.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/python/sparse_ops.html">
+            
+                    
+                    희소 텐서
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2.9" data-path="../../api_docs/python/io_ops.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/python/io_ops.html">
+            
+                    
+                    입력 처리
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2.10" data-path="../../api_docs/python/python_io.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/python/python_io.html">
+            
+                    
+                    데이터 IO
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2.11" data-path="../../api_docs/python/nn.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/python/nn.html">
+            
+                    
+                    뉴럴 네트워크
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2.12" data-path="../../api_docs/python/client.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/python/client.html">
+            
+                    
+                    그래프 실행
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2.13" data-path="../../api_docs/python/train.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/python/train.html">
+            
+                    
+                    학습
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2.14" data-path="../../api_docs/python/script_ops.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/python/script_ops.html">
+            
+                    
+                    함수 연산자
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2.15" data-path="../../api_docs/python/test.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/python/test.html">
+            
+                    
+                    테스트
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2.16" data-path="../../api_docs/python/contrib.layers.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/python/contrib.layers.html">
+            
+                    
+                    레이어
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2.17" data-path="../../api_docs/python/contrib.util.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/python/contrib.util.html">
+            
+                    
+                    유틸리티
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3" data-path="../../api_docs/cc/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/cc/">
+            
+                    
+                    C++ API
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.3.1" data-path="../../api_docs/cc/ClassEnv.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/cc/ClassEnv.html">
+            
+                    
+                    class tensorflow::Env
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3.2" data-path="../../api_docs/cc/ClassRandomAccessFile.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/cc/ClassRandomAccessFile.html">
+            
+                    
+                    class tensorflow::RandomAccessFile
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3.3" data-path="../../api_docs/cc/ClassWritableFile.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/cc/ClassWritableFile.html">
+            
+                    
+                    class tensorflow::WritableFile
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3.4" data-path="../../api_docs/cc/ClassEnvWrapper.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/cc/ClassEnvWrapper.html">
+            
+                    
+                    class tensorflow::EnvWrapper
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3.5" data-path="../../api_docs/cc/ClassSession.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/cc/ClassSession.html">
+            
+                    
+                    class tensorflow::Session
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3.6" data-path="../../api_docs/cc/StructSessionOptions.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/cc/StructSessionOptions.html">
+            
+                    
+                    class tensorflow::SessionOptions
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3.7" data-path="../../api_docs/cc/ClassStatus.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/cc/ClassStatus.html">
+            
+                    
+                    class tensorflow::Status
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3.8" data-path="../../api_docs/cc/StructState.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/cc/StructState.html">
+            
+                    
+                    class tensorflow::State
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3.9" data-path="../../api_docs/cc/ClassTensor.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/cc/ClassTensor.html">
+            
+                    
+                    class tensorflow::Tensor
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3.10" data-path="../../api_docs/cc/ClassTensorShape.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/cc/ClassTensorShape.html">
+            
+                    
+                    class tensorflow::TensorShape
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3.11" data-path="../../api_docs/cc/StructTensorShapeDim.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/cc/StructTensorShapeDim.html">
+            
+                    
+                    class tensorflow::TensorShapeDim
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3.12" data-path="../../api_docs/cc/ClassTensorShapeUtils.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/cc/ClassTensorShapeUtils.html">
+            
+                    
+                    class tensorflow::TensorShapeUtils
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3.13" data-path="../../api_docs/cc/ClassPartialTensorShape.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/cc/ClassPartialTensorShape.html">
+            
+                    
+                    class tensorflow::PartialTensorShape
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3.14" data-path="../../api_docs/cc/ClassPartialTensorShapeUtils.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/cc/ClassPartialTensorShapeUtils.html">
+            
+                    
+                    class tensorflow::PartialTensorShapeUtils
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3.15" data-path="../../api_docs/cc/ClassThread.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/cc/ClassThread.html">
+            
+                    
+                    class tensorflow::Thread
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3.16" data-path="../../api_docs/cc/StructThreadOptions.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/api_docs/cc/StructThreadOptions.html">
+            
+                    
+                    class tensorflow::ThreadOptions
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7" data-path="../../resources/">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/resources/">
+            
+                    
+                    참고자료
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.7.1" data-path="../../resources/bib.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/resources/bib.html">
+            
+                    
+                    텐서플로우 논문
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.2" data-path="../../resources/uses.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/resources/uses.html">
+            
+                    
+                    사용하는 곳
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.3" data-path="../../resources/faq.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/resources/faq.html">
+            
+                    
+                    자주하는 질문
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.4" data-path="../../resources/glossary.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/resources/glossary.html">
+            
+                    
+                    용어
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.5" data-path="../../resources/dims_types.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/resources/dims_types.html">
+            
+                    
+                    랭크, 크기, 타입
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.6" data-path="../../resources/versions.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/resources/versions.html">
+            
+                    
+                    텐서플로우 버전
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.7" data-path="../../resources/roadmap.html">
+            
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/resources/roadmap.html">
+            
+                    
+                    로드맵
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com/" target="blank" class="gitbook-link">
+            GitBook에 게시
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <a class="btn pull-left js-toolbar-action" aria-label="" href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/seq2seq/#"><i class="fa fa-align-justify"></i></a><div class="dropdown pull-right js-toolbar-action"><a class="btn toggle-dropdown" aria-label="Share" href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/seq2seq/#"><i class="fa fa-share-alt"></i></a><div class="dropdown-menu dropdown-left"><div class="dropdown-caret"><span class="caret-outer"></span><span class="caret-inner"></span></div><div class="buttons"><button class="button size-5 ">Facebook</button><button class="button size-5 ">Google+</button><button class="button size-5 ">Twitter</button><button class="button size-5 ">Weibo</button><button class="button size-5 ">Instapaper</button></div></div></div><a class="btn pull-right js-toolbar-action" aria-label="" href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/seq2seq/#"><i class="fa fa-facebook"></i></a><a class="btn pull-right js-toolbar-action" aria-label="" href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/seq2seq/#"><i class="fa fa-twitter"></i></a><div class="dropdown pull-left font-settings js-toolbar-action"><a class="btn toggle-dropdown" aria-label="Font Settings" href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/seq2seq/#"><i class="fa fa-font"></i></a><div class="dropdown-menu dropdown-right"><div class="dropdown-caret"><span class="caret-outer"></span><span class="caret-inner"></span></div><div class="buttons"><button class="button size-2 font-reduce">A</button><button class="button size-2 font-enlarge">A</button></div><div class="buttons"><button class="button size-2 ">Serif</button><button class="button size-2 ">Sans</button></div><div class="buttons"><button class="button size-3 ">White</button><button class="button size-3 ">Sepia</button><button class="button size-3 ">Night</button></div></div></div><h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/">seq2seq 모델</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="시퀸스-투-시퀸스sequenc-to-sequenc-모델">시퀸스-투-시퀸스(Sequenc-to-Sequenc) 모델</h1>
+<p class="comments-section">러커런트 뉴럴 네트워크는  <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/recurrent/">RNN 튜토리얼</a>에서 이미 이야기 했던것 처럼 언어를 모델화하는 것을 학습할 수 있다.<div class="comments-icon"><div class="marker">+</div></div></p>
+<p class="comments-section">(그것을 읽지 않았다면, 이 튜토리얼을 읽기전에 그것을 먼저 읽기를 권한다). 흥미로운 질문이 있다: 몇몇의 입력으로 생성된 단어들을 조건화 할수 있고  어떤 의미있는 응답을 생성할수 있을까? 예를 들어, 영어를 프랑스어로 번역하기 위한 뉴럴 네트워크를 학습할수 있을까? 답은 <em>예</em>가 된다.<div class="comments-icon"><div class="marker">+</div></div></p>
+<p class="comments-section">이 튜토리얼은 그런 앤드-투-앤드 (end-to-end)시스템을 만들고 학습하는 방법 보여줄 것이다.  pip를 통해 tensorflow를 이미 설치했고 tensorflow git 저장소를 클론(clone)했고, git tree의 root에 있다고 가정한다.<div class="comments-icon"><div class="marker">+</div></div></p>
+<p class="comments-section">그리고 나서, 번역 프로그램을 실행함으로 시작할수 있다:<div class="comments-icon"><div class="marker">+</div></div></p>
+<pre><code>cd tensorflow/models/rnn/translate
+python translate.py --data_dir [your_data_directory]
+</code></pre><p class="comments-section">그 프로그램은 <a href="http://www.statmt.org/wmt15/translation-task.html" target="_blank">WMT'15 웹사이트</a>에서 영어-프랑스어 번역 데이타를 다운받을 것이고 학습을 준비하고 학습할 것이다. 그 데이타는 20GB 공간을 차지할 것이고, 다운로드하고 준비하기 위해 좀 시간이 걸린다(상세히 알고 싶으면 <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/seq2seq/#lets-run-it">나중에</a> 보라). 그래서 이 튜토리얼을 읽는 동안 프로그램을 구동시키고 실행해 두자.<div class="comments-icon"><div class="marker">+</div></div></p>
+<p class="comments-section">이 튜토리얼은 <code>models/rnn</code>에서 아래 파일을 참고한다.<div class="comments-icon"><div class="marker">+</div></div></p>
+<table>
+<thead>
+<tr>
+<th>파일</th>
+<th>그 안에 무엇이 있나</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>seq2seq.py</code></td>
+<td>시퀸스-투-시퀸스 모델을 생성하기 위한 라이브러리.</td>
+</tr>
+<tr>
+<td><code>translate/seq2seq_model.py</code></td>
+<td>뉴럴 번역 시퀸스-투-시퀸스 모델.</td>
+</tr>
+<tr>
+<td><code>translate/data_utils.py</code></td>
+<td>번역 데이타를 준비하기 위한 도움 함수들.</td>
+</tr>
+<tr>
+<td><code>translate/translate.py</code></td>
+<td>번역 모델을 훈련하고 실행시키는 바이너리(binary).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="기본적인-시퀸스-투-시퀸스sequence-to-sequence">기본적인 시퀸스-투-시퀸스(Sequence-to-Sequence)</h2>
+<p class="comments-section"><a href="http://arxiv.org/abs/1406.1078" target="_blank">Cho et al., 2014</a>
+(<a href="http://arxiv.org/pdf/1406.1078.pdf" target="_blank">pdf</a>)에서 소개된 기본적인 시퀸스-투-시퀸스 모델은 두개의 리커런트 뉴럴 네트워크(RNN)으로 구성된다: 입력을 처리하는 <em>인코더</em>와 결과를 생성하는 <em>디코더</em>. 이 기본 구조는 아래와 같이 묘사된다.<div class="comments-icon"><div class="marker">+</div></div></p>
+<div style="width:80%; margin:auto; margin-bottom:10px; margin-top:20px;">
+<img style="width:100%" src="./seq2seq 모델 · 텐서플로우 문서 한글 번역본_files/basic_seq2seq.png">
+</div>
+
+<p class="comments-section">위 그림에 각 박스는 가장 일반적으로 GRU 쎌이거나 LSTM 쎌인 RNN 쎌을 나타낸다(<a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/recurrent/">RNN Tutorial</a>를 참조하길 바란다). 인코더와 디코더는 가중치를 공유 할수 있거나, 더 일반적으로는 다른 매개변수 집합을 사용한다. 다중층 쎌들은 역시 시퀸스-투-시퀸스에서 성공적으로 사용되어 왔다. 예로  번역 <a href="http://arxiv.org/abs/1409.3215" target="_blank">Sutskever et al., 2014</a>
+(<a href="http://arxiv.org/pdf/1409.3215.pdf" target="_blank">pdf</a>)에서 알수 있다.<div class="comments-icon"><div class="marker">+</div></div></p>
+<p class="comments-section">위에서 설명된 기본 모델에서, 모든 입력은 디코더에 전달되는 유일한 것이기 때문에 고정된 크기를 가진 상태 벡터로 인코딩 되어져야 한다. 디코더가 입력에 더 직접적인 접근을 가능케 하기 위해, <em>주의(attention)</em> 메카니즘이 <a href="http://arxiv.org/abs/1409.0473" target="_blank">Bahdanau et al., 2014</a>(<a href="http://arxiv.org/pdf/1409.0473.pdf" target="_blank">pdf</a>)에서 소개된다. 주의(attention) 메카나즘에 대해서 상세히 보지 않을 것이다(논문을 참고), 그것은 디코더가 모든 디코딩 단계에서 입력을 엿보게 해주는 것이라고 언급하는 것만으로도 충분하다. LSTM 쎌을 가진 여러층의 시퀸스-투-시퀸스 네트워크와 디코더 안에 어탠션 메카니즘은 이처럼 보인다.<div class="comments-icon"><div class="marker">+</div></div></p>
+<div style="width:80%; margin:auto; margin-bottom:10px; margin-top:20px;">
+<img style="width:100%" src="./seq2seq 모델 · 텐서플로우 문서 한글 번역본_files/attention_seq2seq.png">
+</div>
+
+
+<h2 id="텐서플로우tensorflow-seq2seq-라이브러리">텐서플로우(TensorFlow) seq2seq 라이브러리</h2>
+<p class="comments-section">위에서 볼수 있듯이, 다른 많은 시퀸스-투-시퀸스 모델들이 있다. 각각 이러한 모델은 다른 RNN 쎌들을 사용할 수 있다, 그러나 모두 인코더 입력과 디코디 입력을 받아야 한다. 이것은 텐스플로우 seq2seq 라이브러리(<code>models/rnn/seq2seq.py</code>)의 인터페이스에 동기를 준다.<div class="comments-icon"><div class="marker">+</div></div></p>
+<p class="comments-section">기본적인 RNN 인코더-디코더 시퀸스-투-시퀸스 모델은 아래처럼 동작한다.<div class="comments-icon"><div class="marker">+</div></div></p>
+<pre><code class="lang-python">outputs, states = basic_rnn_seq2seq(encoder_inputs, decoder_inputs, cell)
+</code></pre>
+<p class="comments-section">위에 호출에서, <code>encoder_inputs</code>는 인코더에 입력을 나타내는 텐서(tensor) 리스트이다. 예로, 위에 첫번째 그림에서 문자 <em>A, B, C</em>에 해당된다. 유사하게, <code>decoder_inputs</code>는 디코더에 입력을 나타내는 텐서들이다. 첫번째 그림에 <em>GO, W, X, Y, Z</em> 이다. <div class="comments-icon"><div class="marker">+</div></div></p>
+<p class="comments-section"><code>cell</code> 인수는 <code>models.rnn.rnn_cell.RNNCell</code>클래스의 인스턴스이다, 그것은 어느 쎌이 그 모델 안에서 사용할지를 결정한다. 예를 들어 <code>GRUCell</code> 또는 <code>LSTMCell</code>, 또는 자신의 것을 작성할 수 있다.
+게다가, <code>rnn_cell</code>은 여러층 쎌을 만들고, 쎌 입력과 결과에 드랍아웃(dropout)를 추가하거나 다른 변환을 하기 위한 랩퍼(wrapper)들을 제공한다. 예제들을 보기 위해서는<a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/recurrent/">RNN Tutorial</a>를 참고 하기 바란다.<div class="comments-icon"><div class="marker">+</div></div></p>
+<p class="comments-section"><code>basic_rnn_seq2seq</code> 호출은 두개의 인수를 리턴한다: <code>outputs</code> 와 <code>states</code>. 그것 둘다 <code>decoder_inputs</code>와 동일한 크기의 탠서 리스트이다. 자연스럽게, <code>outputs</code>는 각 시간 단계(time-step)에서 디코더 결과에 해당된다, 위 첫번째 그림에서 그것은 <em>W, X, Y, Z, EOS</em>가 된다. 반환된 <code>states</code>는 모든 시간 단계에서 디코더의 내부 상태를 나타낸다.<div class="comments-icon"><div class="marker">+</div></div></p>
+<p class="comments-section">시퀸스-투-시퀸스 모델의 많은 애플리케이션에서, 시간 t에 디코더 결과는 다시 시간 t+1에 디코더의 입력으로 전달된다. 테스트 시간에, 어떤 시퀸스를 디코딩할때, 이것은 그 시퀸스가 만들어지는 방법이다. 반면에, 학습동안 디코더가 전에 실수를 했어도 모든 시간 단계에 디코더에 올바른 입력을 제공하는 것이 일반적이다. <code>seq2seq.py</code>에 함수들은 <code>feed_previous</code> 인수를 사용해서 두가지 모드를 지원한다. 예를 들어, 아래에 임베드 RNN모델 사용을 분석해 보자.<div class="comments-icon"><div class="marker">+</div></div></p>
+<pre><code class="lang-python">outputs, states = embedding_rnn_seq2seq(
+    encoder_inputs, decoder_inputs, cell,
+    num_encoder_symbols, num_decoder_symbols,
+    output_projection=<span class="hljs-keyword">None</span>, feed_previous=<span class="hljs-keyword">False</span>)
+</code></pre>
+<p class="comments-section"><code>embedding_rnn_seq2seq</code>모드에서, 모든 입력들은(<code>encoder_inputs</code> 과 <code>decoder_inputs</code>) 이산 값(discrete value)을 나타내는 정수-텐서(integer-tensor)들이다. 그것들은 조밀한(dense) 표현으로 임베딩되어 질 것이다(임베딩에 대해 더 자세한 설명을 위해 <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/word2vec/">Vectors Representations Tutorial</a> 를 보길 권한다, 그러나 이러한 임베딩을 만들기 위해서 나타나는 이산 심볼의 최대 수를 지정할 필요가 있다: 인코더 쪽에 <code>num_encoder_symbols</code>, 그리고 디코더 쪽에 <code>num_decoder_symbols</code>. <div class="comments-icon"><div class="marker">+</div></div></p>
+<p class="comments-section">위 호출에서, <code>feed_previous</code>를 False로 설정했다. 이것은 디코더에 전달되는 <code>decoder_inputs</code>를 사용할 것이다. <code>feed_previous</code>가 True로 설정되면, 디코더는 <code>decoder_inputs</code>의 단지 첫번째 원소만 사용할 것이다. 이 리스트에 모든 다른 텐서들은 무시 되어지고, 그대신 디코더의 이전 결과가 사용되어 질 것이다. 이것은 우리의 번역 모델에서 번역을 디코딩 하기 위해서 사용되어진다. <a href="http://arxiv.org/abs/1506.03099" target="_blank">Bengio et al., 2015</a>
+(<a href="http://arxiv.org/pdf/1506.03099.pdf" target="_blank">pdf</a>)와 유사하게 그 모델이 그 자신의 실수에 더 견고하기 하기 위해 또한 학습동안에도 사용되어 질수 있다. <div class="comments-icon"><div class="marker">+</div></div></p>
+<p class="comments-section">위에서 사용된 더 중요한 한 인수는 <code>output_projection</code>이다. 그것이 명시되지 않는다면, 임베딩 모델의 결과는  각 생성된 심볼에 대해 로짓(logit)들로 나타내기 때문에 배치사이즈 x <code>num_decoder_symbols</code>의 형태를 가진 텐서가 될 것이다. 아주 큰 사전을 가지고 모델을 학습할때, 예를 들어, <code>num_decoder_symbols</code>이 아주 클때, 아주 큰 이러한 탠서들을 저장하는것은 비실용적이다. 그대신, 좀더 작은 결과 텐서를 리턴하는 것이 좋다. 그 텐서는 나중에 <code>output_projection</code>를 사용해서 큰 결과 텐서에 투여되어진다. 이것은 <a href="http://arxiv.org/abs/1412.2007" target="_blank">Jean et. al., 2014</a>
+(<a href="http://arxiv.org/pdf/1412.2007.pdf" target="_blank">pdf</a>)에서 설명하는 대로 샘플 소프트맥스 로스(sampled softmax loss)를 가진 seq2seq모델을 사용할수 있게 해준다.<div class="comments-icon"><div class="marker">+</div></div></p>
+<p class="comments-section"><code>basic_run_seq2seq</code>와 <code>embedding_rnn_seq2seq</code>에 더해서, <code>seq2seq.py</code>에 좀더 많은 시퀸스-투-시퀸스 모델들이 있고, 그것을 볼 것이다. 그것들은 유사한 인터페이스를 가진다, 그래서 상세히 설명하지는 않을 것이다. 아래에 우리의 번역 모델을 위해 <code>embedding_attention_seq2seq</code>를 사용할 것이다.<div class="comments-icon"><div class="marker">+</div></div></p>
+<h2 id="뉴럴-번역-모델neural-translation-model">뉴럴 번역 모델(Neural Translation Model)</h2>
+<p class="comments-section">시퀸스-투-시퀸스(sequence-to-sequence) 모델의 중요한 부분은  <code>models/rnn/seq2seq.py</code>에 있는 함수에 의해 구성되어지지만, 여전히 <code>models/rnn/translate/seq2seq_model.py</code>안에 우리 번역 모델에서 사용되어지고 언급할 가치가 있는 몇가지 기교가 있다. <div class="comments-icon"><div class="marker">+</div></div></p>
+<h3 id="샘플-소프트맥스와-결과-프로젝션sampled-softmax-and-output-projection">샘플 소프트맥스와 결과 프로젝션(Sampled softmax and output projection)</h3>
+<p class="comments-section">하나는, 위에서 이미 언급한 대로, 우리는 아주 큰 사전을 다루기 위해서 샘플 소프트맥스(sampled softmax)를 사용하길 원한다. 그것으로 부터 디코딩하기 위해 결과 프로젝션(output projection)를 기억할 필요가 있다. 샘플 소프트맥스 로스(loss)와 결과 프로젝트 둘다는 <code>seq2seq_model.py</code>에 있는 다음 코드에 의해 구성되어진다. <div class="comments-icon"><div class="marker">+</div></div></p>
+<pre><code class="lang-python">  <span class="hljs-keyword">if</span> num_samples &gt; <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> num_samples &lt; self.target_vocab_size:
+    w = tf.get_variable(<span class="hljs-string">"proj_w"</span>, [size, self.target_vocab_size])
+    w_t = tf.transpose(w)
+    b = tf.get_variable(<span class="hljs-string">"proj_b"</span>, [self.target_vocab_size])
+    output_projection = (w, b)
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">sampled_loss</span><span class="hljs-params">(inputs, labels)</span>:</span>
+      labels = tf.reshape(labels, [<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>])
+      <span class="hljs-keyword">return</span> tf.nn.sampled_softmax_loss(w_t, b, inputs, labels, num_samples,
+                                        self.target_vocab_size)
+</code></pre>
+<p class="comments-section">우선, 샘플 수(디폴트가 512)가 목적(target) 사전 크기보다 작다면, 단지 샘플 소프트맥스를 구성한다는 것을 기억하자. 512보다 작은 사전에 대해, 그냥 표준 소프트맥스 손실(softmax loss)를 사용하는 것이 더 나은 생각일지도 모른다.<div class="comments-icon"><div class="marker">+</div></div></p>
+<pre><code class="lang-python"><span class="hljs-keyword">if</span> output_projection <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">None</span>:
+  self.outputs[b] = [tf.matmul(output, output_projection[<span class="hljs-number">0</span>]) +
+                     output_projection[<span class="hljs-number">1</span>] <span class="hljs-keyword">for</span> ...]
+</code></pre>
+<p class="comments-section">그리고 나서, 알다시피, 우리는 결과 프로젝트를 구성한다. 그것은 가중치 행렬과 바이어스(bias) 벡터로 구성된 순서쌍이 된다. 그것이 사용되어지면, rnn쎌은 배치크기 x<code>target_vocab_size</code>가 아니라 배치 크기x<code>size</code>의 벡터들이 리턴될 것이다. 로짓(logit)를 복구하기 위해, <code>seq2seq_model.py</code>에 124-126라인에서 했던 것처럼 가중치 행렬에 의해서 곱해지고, 바이어스가 더해질 필요가 있다. <div class="comments-icon"><div class="marker">+</div></div></p>
+<h3 id="버켓팅bucketing과-패딩padding">버켓팅(Bucketing)과 패딩(padding)</h3>
+<p class="comments-section">샘플 소프트맥스에 더해서, 우리의 번역 모델은 또한 <em>버켓팅(bucketing)</em>를 사용한다, 그것은 다른 크기의 문장을 효과적으로 다루기 위한 방법이다. 우선 그 문제를 명확히 해 보자. 영어에서 프랑스어로 번역할때, 입력으로 L1 크기의 영어문장과 결과로 L2 크기의 프랑스 문장이 있을 것이다. 영어 문장이 <code>encoder_inputs</code>으로 전달되고 프랑스어 문장은 <code>decoder_inputs</code>(GO 심볼이 앞에 붙혀진다) 로 나오기 때문에, 기본적으로 (L1, L2+1)의 모든 순서쌍에 대해 seq2seq 모델을 만들어야 한다. 이것은 아주 유사한 서브 그래프들로 구성되는 거대한 그래프를 만들게 될 것이다. 다른한편으로 특별한 PAD 심볼을 가지고 모든 문장에 간단히 메워 넣을 수 있다. 그러면, 우리는 메워진 크기에 대한 단지 하나의 seq2seq 모델만 만들 필요있게 된다. 그러나 문장이 더 짧을 수록  쓸모없는 PAD 심볼에 대해 디코딩 인코딩 해야되기 때문애 우리의 모델은 비효율적이게 된다.<div class="comments-icon"><div class="marker">+</div></div></p>
+<p class="comments-section">모든 길이의 순서쌍에 대해 그래프를 생성하는 것과 하나의 길이로 패딩하는 것 사이에 절충으로써 몇개의 <em>버켓(bucket)</em>를 사용하고 각 문장을 그 위에서 있는 버켓의 길이로 메워 넣는다.<code>translate.py</code>에서 다음과 같은 기본적인 버켓들을 사용한다.<div class="comments-icon"><div class="marker">+</div></div></p>
+<pre><code class="lang-python">buckets = [(<span class="hljs-number">5</span>, <span class="hljs-number">10</span>), (<span class="hljs-number">10</span>, <span class="hljs-number">15</span>), (<span class="hljs-number">20</span>, <span class="hljs-number">25</span>), (<span class="hljs-number">40</span>, <span class="hljs-number">50</span>)]
+</code></pre>
+<p class="comments-section">이것은 3개의 토근을 가진 영어 문장이 입력이고 6개의 토근을 가진 프랑스어 문장이 그 입력에 대한 결과라고 한다면 그것들은 첫번째 버켓에 들어가게 되고 인코더 입력에 길이 5까지 메워넣고, 디코더 입력에 대해서는 길이 10까지 메워넣게 된다. 8개의 토근을 가진 영어문장이고 그에 상응하는 프랑스어 문장이 18개의 토근을 가진다면, 버켓 (10, 15)에 맞지 않고, 버켓 (20, 25)이 사용될 것이다. 예를 들어, 그 영어 문장은 길이 20까지 메워 질것이고, 프랑스어 문장은 길이 25까지 메워진다.<div class="comments-icon"><div class="marker">+</div></div></p>
+<p class="comments-section">디코더 입력을 만들때, 특별한 <code>GO</code>심볼을 입력 데이타 앞에 붙히는 것을 기억하자. 이것은  <code>seq2seq_model.py</code>에 <code>get_batch()</code>함수 안에서 이루어진다. 그것은 또한 영어 문장 입력을 반대로 변환한다. 입력을 반대로 변환하는 것은 <a href="http://arxiv.org/abs/1409.3215" target="_blank">Sutskever et al., 2014</a>
+(<a href="http://arxiv.org/pdf/1409.3215.pdf" target="_blank">pdf</a>)에서 뉴럴 번역 모델에 대한 결과를 향상시키는 것을 보여주었다. 이것 모든 것을 다 넣기 위해, "I go." 라는 문장이 있다고 가정하고, 입력으로 <code>["I", "go", "."]</code>로 토근화 되고 결과로  "Je vais"가 되고 <code>["Je", "vais", "."]</code>로 토근화 된다. 그것은 <code>[PAD PAD "." "go" "I"]</code>로 인코더 입력이고, <code>[GO "Je" "vais" "." EOS PAD PAD PAD PAD PAD]</code>는 디코더 입력으로  버켓 (5,10)에 들어가게 될것이다.<div class="comments-icon"><div class="marker">+</div></div></p>
+<h2 id="그것을-실행해보자">그것을 실행해보자</h2>
+<p class="comments-section">위에 설명되어진 대로 모델을 훈련하기 위해, 우리는 아주 큰 영어-프랑스어 코퍼서(corpus)가 필요하다. <a href="http://www.statmt.org/wmt15/translation-task.html" target="_blank">WMT'15 Website</a>에서 <em>10^9-French-English corpus</em>를 훈련을 위해 사용할 것이고, 개발 셋(development set)으로 그 동일한 사이트에서 2013 news test를 사용할 것이다.<div class="comments-icon"><div class="marker">+</div></div></p>
+<pre><code>python translate.py
+  --data_dir [your_data_directory] --train_dir [checkpoints_directory]
+  --en_vocab_size=40000 --fr_vocab_size=40000
+</code></pre><p class="comments-section">약 18GB 디스크 공간을 차지 하고 훈련 코퍼스를 준비하기 위해 몇 시간이 걸린다. 그것이 풀려지면, 사전 파일들이 <code>data_dir</code>에 만들어 진다, 그리고 나서 그 코퍼스는 토근화 되어지고 정수 식별자(integer id)로 변환될것이다. 사전 크기를 결정하는 매개변수들을 주시하자. 위 예에서, 가장 일반적인 단어 4만개에 있는 않는 모든 단어들은 모르는 단어를 나타내는 <code>UNK</code>토근으로 변환 될것이다. 사전 크기를 변경한다면 바이너리는 토근 식별자(token id)를 그 코퍼스에 다시 연결 할것이다.<div class="comments-icon"><div class="marker">+</div></div></p>
+<p class="comments-section">데이타가 준비된 뒤에, 훈련이 시작된다. <code>translate</code>에 있는 디폴트 매개변수는 꽤 큰 값으로 설정되어 있다. 아주 긴 시간 동안 학습된 큰 모델은 좋은 결과를 준다, 그러나 너무 긴 시간과 GPU에 너무 많은 메모리를 사용할지도 모른다. 다음 예처럼 더 작은 모델을 학습하는 것을 요청할 수 있다. <div class="comments-icon"><div class="marker">+</div></div></p>
+<pre><code>python translate.py
+  --data_dir [your_data_directory] --train_dir [checkpoints_directory]
+  --size=256 --num_layers=2 --steps_per_checkpoint=50
+</code></pre><p class="comments-section">위 명령은 256 유닛(디폴트는 1024)을 가진 각 2개층(디폴트는 3)을 가진 모델을 학습할 것이고, 50 단계(디폴트는 200) 마다 체크포인트(checkpoint)를 저장할 것이다. 여러분의 GPU의 메모리에 얼마나 큰 모델이 맞게 할 수 있는지 알기 위해 이러한 매개변수를 통해 할수 있다.<div class="comments-icon"><div class="marker">+</div></div></p>
+<p class="comments-section">학습 동안, 모든 <code>steps_per_checkpoint</code> 단계에서 바이너리는 최근 단계로 부터 통계를 프린터 할것이다. 디폴트 매개변수(크기 1024의 3개층)와 함께 첫번째 메시지는 이처럼 보인다.<div class="comments-icon"><div class="marker">+</div></div></p>
+<pre><code>global step 200 learning rate 0.5000 step-time 1.39 perplexity 1720.62
+  eval: bucket 0 perplexity 184.97
+  eval: bucket 1 perplexity 248.81
+  eval: bucket 2 perplexity 341.64
+  eval: bucket 3 perplexity 469.04
+global step 400 learning rate 0.5000 step-time 1.38 perplexity 379.89
+  eval: bucket 0 perplexity 151.32
+  eval: bucket 1 perplexity 190.36
+  eval: bucket 2 perplexity 227.46
+  eval: bucket 3 perplexity 238.66
+</code></pre><p class="comments-section">각 단계는 단지 1.4초보다 빠르게 걸린다는 것과 훈련 셋에 퍼플렉서티(perplexity)와 개발 셋에 퍼플렉서티들을 볼수 있다. 대략 3만 단계 뒤에, 짧은 문장(버켓이 0과 1)에 대한 퍼플렉서티가 한 자릿수로 된다. 훈련 코퍼스는 ~22M 문장을 포함하기 때문에, 각 epoch(훈련 데이타 전체 한번 통과)은 64의 배치크기로 대략 340K 단계가 걸린다. 이 시점에, 그 모델은 <code>--decode</code> 옵션을 사용해서 영어 문장에서 프랑스 문장으로 변역하기 위해 사용되어 질 수 있다.<div class="comments-icon"><div class="marker">+</div></div></p>
+<pre><code>python translate.py --decode
+  --data_dir [your_data_directory] --train_dir [checkpoints_directory]
+
+Reading model parameters from /tmp/translate.ckpt-340000
+&gt;  Who is the president of the United States?
+ Qui est le président des États-Unis ?
+</code></pre><h2 id="다음은">다음은?</h2>
+<p class="comments-section">위 예는 앤드-투-앤드(end-to-end)로 영어-에서-프랑스어(English-to-French) 번역기를 만드는 방법을 보여준다. 스스로 그것을 실행하고 그 모델이 어떻게 수행하는지 봐라. 그것이 꽤 괜찮은 성능을 보이지만, 디플트 매개변수로 최고의 번역 모델이 주어지지 않는다. 여기 여러분이 그것을 향상 시킬수 있는 몇가지 방법이 있다.<div class="comments-icon"><div class="marker">+</div></div></p>
+<p class="comments-section">무엇보다, <code>data_utils</code>안에 <code>basic_tokenizer</code>인 아주 기본적인 토큰생성자를 사용한다. 더 좋은 토큰 생성자는 <a href="http://www.statmt.org/wmt15/translation-task.html" target="_blank">WMT'15 Website</a>에서 찾을수 있다. 저 토근 생성자와 더 큰 사전을 사용하는 것은 번역을 향샹 시킬 것이다.<div class="comments-icon"><div class="marker">+</div></div></p>
+<p class="comments-section">또한, 그 번역 모델의 디폴트 매개변수는 최적화 되지 않았다. 학습 비율(learning rate)이나 디케이(decay)를 변경하거나, 다른 방법으로 여러분의 모델의 가중치들을 초기하는 것을 시도 할수 있다. 또한 <code>seq2seq_model.py</code>에 있는 디폴트인 <code>GradientDescentOptimizer</code>를 더 혁신적인 <code>AdagradOptimizer</code>로 변경할 수 있다. 이러한 것들을 시도하고 결과가 어떻게 향샹 되는지 보자.<div class="comments-icon"><div class="marker">+</div></div></p>
+<p class="comments-section">마지막으로, 위에서 나타난 모델은 번역뿐만 아니라 어떤 시퀸스-투-시퀸스 작업에 대해서도 사용되어 질수 있다. 하나의 시퀸스을 트리로 변환하기 원한다고 할지라도, 예를 들어 파싱 트리를 생성하기, 위처럼 동일한 모델은<a href="http://arxiv.org/abs/1412.7449" target="_blank">Vinyals &amp; Kaiser et al., 2014</a>
+(<a href="http://arxiv.org/pdf/1412.7449.pdf" target="_blank">pdf</a>)에서 보여진대로 최고의 결과를 준다. 그래서 여러분 자신의 번역기를 만들수 있을 뿐만 아니라 또한 파서, 챗봇, 또는 당신 머리에 떠오르는 어떤 프로그램도 만들수 있다. 실험해보라!<div class="comments-icon"><div class="marker">+</div></div></p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class="search-results-count"></span> results matching "<span class="search-query"></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class="search-query"></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/recurrent/" class="navigation navigation-prev " aria-label="Previous page: 리커런트 뉴럴 네트워크">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/syntaxnet/" class="navigation navigation-next " aria-label="Next page: SyntaxNet" style="margin-right: 15px;">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"seq2seq 모델","level":"1.4.5.3","depth":3,"next":{"title":"SyntaxNet","level":"1.4.5.4","depth":3,"path":"g3doc/tutorials/syntaxnet/index.md","ref":"g3doc/tutorials/syntaxnet/index.md","articles":[]},"previous":{"title":"리커런트 뉴럴 네트워크","level":"1.4.5.2","depth":3,"path":"g3doc/tutorials/recurrent/index.md","ref":"g3doc/tutorials/recurrent/index.md","articles":[]},"dir":"ltr"},"config":{"plugins":["mathjax","comment"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"mathjax":{"forceSVG":false,"version":"2.6-latest"},"comment":{"highlightCommented":true},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"github":"tensorflowkorea/tensorflow-kr","theme":"default","author":"TensorFlow Korea","pdf":{"pageNumbers":true,"fontSize":16,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"텐서플로우 문서 한글 번역본","language":"ko","links":{"sidebar":{"텐서플로우 문서 한글 번역본":"https://www.gitbook.com/book/tensorflowkorea/tensorflow-kr"},"gitbook":true},"gitbook":"*","description":"tensorflow.org 의 문서를 한글로 번역하여 깃북으로 제공합니다."},"file":{"path":"g3doc/tutorials/seq2seq/index.md","mtime":"2017-03-29T07:50:56.000Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-03-29T07:53:38.165Z"},"basePath":"../../..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="./seq2seq 모델 · 텐서플로우 문서 한글 번역본_files/gitbook.js"></script>
+    <script src="./seq2seq 모델 · 텐서플로우 문서 한글 번역본_files/theme.js"></script>
+    
+        
+        <script src="./seq2seq 모델 · 텐서플로우 문서 한글 번역본_files/MathJax.js"></script>
+        
+    
+        
+        <script src="./seq2seq 모델 · 텐서플로우 문서 한글 번역본_files/plugin.js"></script>
+        
+    
+        
+        <script src="./seq2seq 모델 · 텐서플로우 문서 한글 번역본_files/plugin(1).js"></script>
+        
+    
+        
+        <script src="./seq2seq 모델 · 텐서플로우 문서 한글 번역본_files/search-engine.js"></script>
+        
+    
+        
+        <script src="./seq2seq 모델 · 텐서플로우 문서 한글 번역본_files/search.js"></script>
+        
+    
+        
+        <script src="./seq2seq 모델 · 텐서플로우 문서 한글 번역본_files/lunr.min.js"></script>
+        
+    
+        
+        <script src="./seq2seq 모델 · 텐서플로우 문서 한글 번역본_files/search-lunr.js"></script>
+        
+    
+        
+        <script src="./seq2seq 모델 · 텐서플로우 문서 한글 번역본_files/buttons.js"></script>
+        
+    
+        
+        <script src="./seq2seq 모델 · 텐서플로우 문서 한글 번역본_files/fontsettings.js"></script>
+        
+    
+
+    
+<div><script style="display: none;" type="application/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-57505611-7', 'auto', {name: 'microcdn'});
+  ga('microcdn.send', 'pageview');
+
+  var _cdn_prev_loc = window.location.pathname;
+  window.setInterval(function () {
+    if (window.location.pathname !== _cdn_prev_loc) {
+      _cdn_prev_loc = window.location.pathname;
+      ga('microcdn.send', 'pageview');
+    }
+  }, 100);
+
+</script></div>
+
+
+
+</body></html>
