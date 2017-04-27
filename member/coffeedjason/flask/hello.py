@@ -1,6 +1,6 @@
 # _*_ coding: utf-8 _*_
 
-from flask import Flask, request, session, render_template
+from flask import Flask, request, session, render_template, redirect, url_for
 
 app = Flask(__name__)
 
