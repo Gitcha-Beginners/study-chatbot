@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Git commit list with VueJS</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="./main.css" />
+</head>
+<body>
+
+<div class=jumbotron>
+    <div id="til" class="container">
+        <h1>Latest commits in TIL</h1>
+        <template v-for="branch in branches">
+            <input type="radio"
+                :id="branch"
+                :value="branch"
+                name="branch"
+                v-model="currentBranch">
+            <label :for="branch">{{branch}}</label>
+        </template>
+        <br />
+        <label for="numCommits">Please type the number up to 100.</label>
+        <input type="number" class="form-control" :placeholder="numCommits" name="numCommits"
+            v-model="numCommits" max="100" />
+
+        <p>TIL@{{currentBranch}}</p>
+        <ul>
+            <li v-for="record in commits">
+                <a :href="record.html_url" target="_blank" class="commit">
+                    {{record.sha.slice(0, 7)}}
+                </a>
+                -
+                <span class="message">
+                    {{record.commit.message | truncate}}
+                </span>
+                <br />
+                by
+                <span class="author">
+                    <a :href="record.author.html_url" target="_blank" class="authorName">
+                        {{record.commit.author.name}}
+                    </a>
+                </span>
+                at
+                <span class="date">
+                    {{record.commit.author.date | formatDate}}
+                </span>
+            </li>
+        </ul>
+    </div>
+</div>
+    <script src="https://unpkg.com/vue@2.2.6"></script>
+    <script>
+        var apiURL = "https://api.github.com/repos/coffeedjason/TIL/commits?per_page="
+
+        var til = new Vue({
+            el: '#til',
+
+            data: {
+                // branches: ['master', 'dev'],
+                branches: ['master'],
+                numCommits: 5,
+                currentBranch: 'master',
+                commits: null
+            },
+
+            created(){
+                this.fetchData()
+            },
+
+            watch: {
+                currentBranch: 'fetchData',
+                numCommits: 'fetchData'
+            },
+            filters: {
+                truncate(v){
+                    var newline = v.indexOf('\n')
+                    return newline > 0 ? v.slice(0, newline) : v
+                },
+                formatDate(v){
+                    return v.replace(/T|Z/g, ' ')
+                }
+            },
+            methods: {
+                fetchData(){
+                    var xhr = new XMLHttpRequest()
+                    var self = this
+                    xhr.open('GET', apiURL + this.numCommits + "&sha=" + self.currentBranch)
+                    xhr.onload = function(){
+                        self.commits = JSON.parse(xhr.responseText)
+                        console.log(self.commits[0].html_url)
+                    }
+
+                    xhr.send()
+                }
+            }
+        });
+    </script>
+
+
+</body>
+</html>
