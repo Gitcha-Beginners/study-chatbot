@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Vue-Grid-Component</title>
+    <link rel="stylesheet" href="./main.css">
+</head>
+<body>
+
+    <div id="component_example">
+        <!-- Search Input -->
+        <form action="#" id="search">
+            Search
+            <input type="text" name="query" v-model="searchQuery" />
+        </form>
+        <br />
+        <component-grid
+            :data="gridData"
+            :columns="gridColumns"
+            :filter-key="searchQuery">
+        </component-grid>
+    </div>
+
+    <script src="https://unpkg.com/vue@2.2.6"></script>
+    <!-- https://vuejs.org/v2/guide/components.html#X-Templates -->
+    <!-- <script type="text/x-template" id="grid-template"></script> -->
+
+    <script>
+        Vue.component('component-grid', {
+            template: `
+            <table>
+                <thead>
+                  <tr>
+                    <th v-for="key in columns"
+                      @click="sortBy(key)"
+                      :class="{ active: sortKey == key }">
+                      {{ key | capitalize }}
+                      <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
+                      </span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="entry in filteredData">
+                    <td v-for="key in columns">
+                      {{entry[key]}}
+                    </td>
+                  </tr>
+                </tbody>
+            </table>
+            `,
+            // https://vuejs.org/v2/guide/components.html#Composing-Components
+            props: {
+                data: Array,
+                columns: Array,
+                filterKey: String
+            },
+            data(){
+                var sortOrders = {}
+                this.columns.forEach((key)=>{
+                    sortOrders[key] = 1
+                })
+                return{
+                    sortKey: 'name', // set default sortKey as 'name'
+                    sortOrders: sortOrders
+                }
+            },
+            computed: {
+                filteredData(){
+                    var sortKey = this.sortKey
+                    // var filterKey = this.filterKey.toLowerCase() && this.filterKey => this.filterKey
+                    // var filterKey = this.filterKey && this.filterKey.toLowerCase() => this.filterKey.toLowerCase()
+                    var filterKey = this.filterKey.toLowerCase()
+                    var order = this.sortOrders[sortKey] || 1
+                    var data = this.data // gridData -> props.data
+                    if (filterKey){
+                        data = data.filter((row) => {
+                            // The some() method tests whether some element in the array passes the test implemented by the provided function.
+                            return Object.keys(row).some((key)=>{
+                                // console.log(key)
+                                // console.log(row[key])
+                                // console.log(String(row[key]))
+                                // console.log(String(row[key]).toLowerCase().indexOf(filterKey))
+                                return String(row[key]).toLowerCase().indexOf(filterKey) > -1
+                            })
+                        })
+                    }
+                    if (sortKey){
+
+                        data = data.slice().sort((a,b)=>{
+                            a = a[sortKey]
+                            b = b[sortKey]
+                            return (a===b ? 0 : a>b ? 1 : -1) * order  // 1 => asc / -1 => desc
+                        })
+                    }
+                    return data
+                }
+            },
+            filters: {
+                capitalize(str){
+                    return str.charAt(0).toUpperCase() + str.slice(1)
+                }
+            },
+            methods: {
+                sortBy(key){
+                    this.sortKey = key
+                    this.sortOrders[key] = this.sortOrders[key] * -1
+                }
+            }
+        });
+
+        var component_example = new Vue({
+            el: '#component_example',
+            data: {
+                searchQuery: '',
+                gridColumns: ['name', 'power'],
+                gridData: [
+                    { name: 'Jamie Simpson', power: Infinity },
+                    { name: 'Rob Davis', power: 9000 },
+                    { name: 'Amy Gradle', power: 7000 },
+                    { name: 'Jason Parker', power: 8000 }
+                ]
+            }
+        })
+    </script>
+</body>
+</html>
